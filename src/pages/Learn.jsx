@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ChevronDown, PlayCircle, Search, BookOpen } from 'lucide-react'
 import { getSubject, getMaterials } from '../api/client'
+import { diagrams } from '../components/diagrams'
 
 export default function Learn() {
   const { subjectId } = useParams()
@@ -118,6 +119,7 @@ export default function Learn() {
         {filteredTopics.map((topic) => {
           const content = subjectMaterials[topic]
           const isOpen = openTopics.has(topic)
+          const Diagram = diagrams[topic]
           return (
             <div
               key={topic}
@@ -145,6 +147,11 @@ export default function Learn() {
                       <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                         {content.summary}
                       </p>
+                      {Diagram && (
+                        <div className="mt-4">
+                          <Diagram />
+                        </div>
+                      )}
                       {content.points && (
                         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-slate-600 dark:text-slate-300">
                           {content.points.map((point, i) => (

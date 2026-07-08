@@ -1,5 +1,6 @@
 import express from 'express'
 import client, { ensureReady } from './db.js'
+import { blueprint } from '../src/data/blueprint.js'
 
 const app = express()
 app.use(express.json())
@@ -95,7 +96,7 @@ app.get('/api/subjects/:id/questions', async (req, res) => {
     sql: 'SELECT * FROM questions WHERE subject_id = ?',
     args: [req.params.id],
   })
-  const questionsList = rows.map((r) => ({
+  const pool = rows.map((r) => ({
     id: r.id,
     group: r.group_id ?? undefined,
     difficulty: r.difficulty ?? undefined,
@@ -105,7 +106,22 @@ app.get('/api/subjects/:id/questions', async (req, res) => {
     correct: JSON.parse(r.correct),
     explanation: r.explanation ?? undefined,
   }))
-  res.json(shuffle(questionsList))
+
+  const format = blueprint[req.params.id]
+  if (!format) {
+    return res.json(shuffle(pool))
+  }
+
+  // Each group/difficulty bucket may hold more questions than the exam requires,
+  // so every attempt draws a random subset instead of always the same fixed set.
+  const selected = []
+  for (const group of format.groups) {
+    for (const [difficulty, count] of Object.entries(group.difficulty)) {
+      const bucket = pool.filter((q) => q.group === group.id && q.difficulty === difficulty)
+      selected.push(...shuffle(bucket).slice(0, count))
+    }
+  }
+  res.json(shuffle(selected))
 })
 
 app.get('/api/attempts', async (req, res) => {
