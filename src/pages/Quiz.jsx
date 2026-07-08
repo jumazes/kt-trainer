@@ -135,6 +135,7 @@ export default function Quiz() {
       </div>
 
       <QuestionCard
+        key={currentQuestion.id}
         question={currentQuestion}
         selected={selectedForCurrent}
         onSelect={handleSelect}
@@ -148,7 +149,7 @@ export default function Quiz() {
             type="button"
             onClick={handleCheck}
             disabled={selectedForCurrent.length === 0}
-            className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-violet-700 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
           >
             Проверить
           </button>
@@ -156,7 +157,7 @@ export default function Quiz() {
           <button
             type="button"
             onClick={handleNext}
-            className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-700"
+            className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-violet-700 active:scale-[0.97]"
           >
             {isLast ? (
               <>

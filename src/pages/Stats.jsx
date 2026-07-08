@@ -40,7 +40,7 @@ export default function Stats() {
           <button
             type="button"
             onClick={handleClear}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 transition-all duration-150 hover:bg-slate-50 active:scale-[0.97] dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             <Trash2 className="h-4 w-4" />
             Очистить мою историю
@@ -53,7 +53,7 @@ export default function Stats() {
           <button
             type="button"
             onClick={() => setFilter(ALL)}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-all duration-150 active:scale-95 ${
               filter === ALL
                 ? 'bg-violet-600 text-white'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
@@ -66,7 +66,7 @@ export default function Stats() {
               key={name}
               type="button"
               onClick={() => setFilter(name)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-all duration-150 active:scale-95 ${
                 filter === name
                   ? 'bg-violet-600 text-white'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'

@@ -5,7 +5,7 @@ export default function QuestionCard({ question, selected, onSelect, showResult,
   const correctSet = new Set(question.correct)
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="animate-fade-slide-in rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-2 flex flex-wrap items-center gap-2">
         {question.topic && (
           <span className="inline-block rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500 dark:bg-slate-800 dark:text-slate-400">
@@ -55,7 +55,9 @@ export default function QuestionCard({ question, selected, onSelect, showResult,
               type="button"
               disabled={showResult}
               onClick={() => onSelect(index)}
-              className={`flex items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-colors disabled:cursor-default ${stateStyles}`}
+              className={`flex items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-all duration-150 disabled:cursor-default ${
+                showResult ? '' : 'active:scale-[0.98]'
+              } ${stateStyles}`}
             >
               <span className="flex items-center gap-2">
                 <SelectIcon
@@ -64,17 +66,17 @@ export default function QuestionCard({ question, selected, onSelect, showResult,
                 {option}
               </span>
               {showResult && isCorrect && (
-                <Check className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <Check className="h-4 w-4 shrink-0 animate-pop-in text-emerald-600 dark:text-emerald-400" />
               )}
               {showResult && isSelected && !isCorrect && (
-                <X className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                <X className="h-4 w-4 shrink-0 animate-pop-in text-rose-600 dark:text-rose-400" />
               )}
             </button>
           )
         })}
       </div>
       {showResult && question.explanation && (
-        <p className="mt-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-600 dark:bg-slate-800/50 dark:text-slate-300">
+        <p className="mt-4 animate-fade-slide-in rounded-lg bg-slate-50 p-3 text-sm text-slate-600 dark:bg-slate-800/50 dark:text-slate-300">
           {question.explanation}
         </p>
       )}

@@ -85,7 +85,7 @@ export default function Learn() {
         </Link>
         <Link
           to={`/quiz/${subject.id}`}
-          className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-violet-700"
+          className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-150 hover:bg-violet-700 active:scale-[0.97]"
         >
           <PlayCircle className="h-4 w-4" />
           Начать тест
@@ -129,17 +129,17 @@ export default function Learn() {
               <button
                 type="button"
                 onClick={() => toggleTopic(topic)}
-                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50"
               >
                 <span className="font-medium text-slate-900 dark:text-slate-100">
                   {topic}
                 </span>
                 <ChevronDown
-                  className={`h-4 w-4 shrink-0 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                  className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                 />
               </button>
               {isOpen && (
-                <div className="border-t border-slate-100 px-4 py-4 dark:border-slate-800">
+                <div className="animate-expand origin-top border-t border-slate-100 px-4 py-4 dark:border-slate-800">
                   {content ? (
                     <>
                       <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">

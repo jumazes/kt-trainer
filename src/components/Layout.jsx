@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { GraduationCap, LayoutDashboard, BarChart3 } from 'lucide-react'
 import PlayerNameBadge from './PlayerNameBadge'
 
@@ -8,8 +8,10 @@ const navItems = [
 ]
 
 export default function Layout() {
+  const location = useLocation()
+
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+    <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3">
           <div className="flex shrink-0 items-center gap-1.5 font-semibold sm:gap-2">
@@ -41,9 +43,14 @@ export default function Layout() {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        <Outlet />
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+        <div key={location.pathname} className="animate-fade-slide-in">
+          <Outlet />
+        </div>
       </main>
+      <footer className="border-t border-slate-200 bg-white py-4 text-center text-sm text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500">
+        Aslan Jumajan
+      </footer>
     </div>
   )
 }
