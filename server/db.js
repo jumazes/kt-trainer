@@ -16,7 +16,15 @@ const client = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN,
 })
 
+// Bump this whenever src/data/subjects.js, materials.js, questions.js or blueprint.js change,
+// so deployed databases refresh their content without wiping the attempts (progress) table.
+const CONTENT_VERSION = '2025-07-09-01'
+
 const SCHEMA = [
+  `CREATE TABLE IF NOT EXISTS meta (
+    key TEXT PRIMARY KEY,
+    value TEXT
+  )`,
   `CREATE TABLE IF NOT EXISTS subjects (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,
@@ -144,10 +152,25 @@ export function ensureReady() {
   if (!readyPromise) {
     readyPromise = (async () => {
       await client.batch(SCHEMA, 'write')
-      const { rows } = await client.execute('SELECT COUNT(*) AS c FROM subjects')
-      if (Number(rows[0].c) === 0) {
-        await client.batch(buildSeedStatements(), 'write')
-        console.log('Database seeded with subjects, topics, groups and questions.')
+      const { rows } = await client.execute("SELECT value FROM meta WHERE key = 'content_version'")
+      const currentVersion = rows[0]?.value
+
+      if (currentVersion !== CONTENT_VERSION) {
+        await client.batch(
+          [
+            'DELETE FROM questions',
+            'DELETE FROM groups',
+            'DELETE FROM topics',
+            'DELETE FROM subjects',
+            ...buildSeedStatements(),
+            {
+              sql: 'INSERT INTO meta (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
+              args: ['content_version', CONTENT_VERSION],
+            },
+          ],
+          'write',
+        )
+        console.log(`Database content refreshed to version ${CONTENT_VERSION}.`)
       }
     })()
   }
