@@ -18,7 +18,7 @@ const client = createClient({
 
 // Bump this whenever src/data/subjects.js, materials.js, questions.js or blueprint.js change,
 // so deployed databases refresh their content without wiping the attempts (progress) table.
-const CONTENT_VERSION = '2025-07-09-02'
+const CONTENT_VERSION = '2025-07-09-03'
 
 const SCHEMA = [
   `CREATE TABLE IF NOT EXISTS meta (

@@ -284,6 +284,15 @@ printf("%d %d", p.x, p.y);`,
         'Простая в реализации, но неэффективна для больших массивов — используется в основном в учебных целях',
         'Устойчивый (stable) алгоритм сортировки',
       ],
+      example: `void bubbleSort(int a[], int n) {
+    for (int i = 0; i < n - 1; i++)
+        for (int j = 0; j < n - 1 - i; j++)
+            if (a[j] > a[j + 1]) {
+                int tmp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = tmp;
+            }
+}`,
     },
     'Сортировка вставкой': {
       summary:
@@ -292,6 +301,17 @@ printf("%d %d", p.x, p.y);`,
         'Сложность O(n²) в среднем и худшем случае, но O(n) на уже почти отсортированных данных — эффективна для малых или частично упорядоченных массивов',
         'Устойчивый алгоритм, работает "на месте" (in-place), не требует дополнительной памяти',
       ],
+      example: `void insertionSort(int a[], int n) {
+    for (int i = 1; i < n; i++) {
+        int key = a[i];
+        int j = i - 1;
+        while (j >= 0 && a[j] > key) {
+            a[j + 1] = a[j];
+            j--;
+        }
+        a[j + 1] = key;
+    }
+}`,
     },
     'Сортировка выбором': {
       summary:
@@ -302,6 +322,16 @@ printf("%d %d", p.x, p.y);`,
         'Делает минимальное количество обменов (O(n)) по сравнению с bubble sort — полезно, когда операция обмена дорогая',
         'Неустойчивый алгоритм в классической реализации',
       ],
+      example: `void selectionSort(int a[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int min = i;
+        for (int j = i + 1; j < n; j++)
+            if (a[j] < a[min]) min = j;
+        int tmp = a[i];
+        a[i] = a[min];
+        a[min] = tmp;
+    }
+}`,
     },
     'Оценка сложности алгоритма': {
       summary:
@@ -334,6 +364,22 @@ printf("%d %d", p.x, p.y);`,
         'Эффективна, когда входные данные равномерно распределены на известном диапазоне',
         'Средняя сложность O(n + k), где k — число корзин; в худшем случае деградирует до O(n²)',
       ],
+      example: `void bucketSort(float a[], int n) {
+    int count[10] = {0};
+    float buckets[10][100];
+
+    for (int i = 0; i < n; i++) {
+        int idx = (int)(a[i] * 10);
+        buckets[idx][count[idx]++] = a[i];
+    }
+    for (int i = 0; i < 10; i++)
+        insertionSort(buckets[i], count[i]);
+
+    int k = 0;
+    for (int i = 0; i < 10; i++)
+        for (int j = 0; j < count[i]; j++)
+            a[k++] = buckets[i][j];
+}`,
     },
     'Сортировка подсчётом': {
       summary:
@@ -343,6 +389,16 @@ printf("%d %d", p.x, p.y);`,
         'Эффективна только когда диапазон значений k сравним с n (иначе тратится много памяти)',
         'Устойчива (stable): сохраняет относительный порядок равных элементов',
       ],
+      example: `void countingSort(int a[], int n, int maxVal) {
+    int count[maxVal + 1];
+    for (int i = 0; i <= maxVal; i++) count[i] = 0;
+    for (int i = 0; i < n; i++) count[a[i]]++;
+
+    int k = 0;
+    for (int v = 0; v <= maxVal; v++)
+        while (count[v]-- > 0)
+            a[k++] = v;
+}`,
     },
     'Поразрядная сортировка': {
       summary:
@@ -351,6 +407,32 @@ printf("%d %d", p.x, p.y);`,
         'Сложность O(d · (n + k)), где d — число разрядов, k — размер алфавита разряда',
         'Эффективна для чисел фиксированной длины или строк одинакового размера',
       ],
+      example: `int getMax(int a[], int n) {
+    int max = a[0];
+    for (int i = 1; i < n; i++)
+        if (a[i] > max) max = a[i];
+    return max;
+}
+
+void countingSortByDigit(int a[], int n, int exp) {
+    int output[n], count[10] = {0};
+    for (int i = 0; i < n; i++)
+        count[(a[i] / exp) % 10]++;
+    for (int i = 1; i < 10; i++)
+        count[i] += count[i - 1];
+    for (int i = n - 1; i >= 0; i--) {
+        int digit = (a[i] / exp) % 10;
+        output[--count[digit]] = a[i];
+    }
+    for (int i = 0; i < n; i++)
+        a[i] = output[i];
+}
+
+void radixSort(int a[], int n) {
+    int max = getMax(a, n);
+    for (int exp = 1; max / exp > 0; exp *= 10)
+        countingSortByDigit(a, n, exp);
+}`,
     },
     'Сортировка слиянием': {
       summary:
@@ -360,6 +442,26 @@ printf("%d %d", p.x, p.y);`,
         'Требует дополнительной памяти O(n) для слияния',
         'Устойчивый алгоритм сортировки, хорошо подходит для связанных списков',
       ],
+      example: `void merge(int a[], int l, int m, int r) {
+    int n1 = m - l + 1, n2 = r - m;
+    int left[n1], right[n2];
+    for (int i = 0; i < n1; i++) left[i] = a[l + i];
+    for (int j = 0; j < n2; j++) right[j] = a[m + 1 + j];
+
+    int i = 0, j = 0, k = l;
+    while (i < n1 && j < n2)
+        a[k++] = (left[i] <= right[j]) ? left[i++] : right[j++];
+    while (i < n1) a[k++] = left[i++];
+    while (j < n2) a[k++] = right[j++];
+}
+
+void mergeSort(int a[], int l, int r) {
+    if (l >= r) return;
+    int m = (l + r) / 2;
+    mergeSort(a, l, m);
+    mergeSort(a, m + 1, r);
+    merge(a, l, m, r);
+}`,
     },
     'Быстрая сортировка': {
       summary:
@@ -370,6 +472,24 @@ printf("%d %d", p.x, p.y);`,
         'Обычно быстрее merge sort на практике за счёт лучшей работы с кэшем и сортировки на месте (in-place), но неустойчива',
         'Случайный выбор pivot или медиана трёх снижают риск худшего случая',
       ],
+      example: `int partition(int a[], int lo, int hi) {
+    int pivot = a[hi];
+    int i = lo - 1;
+    for (int j = lo; j < hi; j++)
+        if (a[j] < pivot) {
+            i++;
+            int tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+        }
+    int tmp = a[i + 1]; a[i + 1] = a[hi]; a[hi] = tmp;
+    return i + 1;
+}
+
+void quickSort(int a[], int lo, int hi) {
+    if (lo >= hi) return;
+    int p = partition(a, lo, hi);
+    quickSort(a, lo, p - 1);
+    quickSort(a, p + 1, hi);
+}`,
     },
     'Двоичная куча': {
       summary:
@@ -378,6 +498,20 @@ printf("%d %d", p.x, p.y);`,
         'Для узла с индексом i дети находятся по индексам 2i+1 и 2i+2, родитель — (i-1)/2',
         'Вставка и извлечение корня — O(log n); просмотр минимума/максимума — O(1)',
       ],
+      example: `void siftUp(int heap[], int i) {
+    while (i > 0 && heap[(i - 1) / 2] < heap[i]) {
+        int tmp = heap[i];
+        heap[i] = heap[(i - 1) / 2];
+        heap[(i - 1) / 2] = tmp;
+        i = (i - 1) / 2;
+    }
+}
+
+void insertHeap(int heap[], int *size, int value) {
+    heap[*size] = value;
+    siftUp(heap, *size);
+    (*size)++;
+}`,
     },
     'Сортировка кучей': {
       summary:
@@ -386,6 +520,24 @@ printf("%d %d", p.x, p.y);`,
         'Гарантированная сложность O(n log n) в худшем случае, сортировка на месте (in-place)',
         'В отличие от merge sort не требует дополнительной памяти, но не является устойчивой',
       ],
+      example: `void siftDown(int a[], int n, int i) {
+    int largest = i, l = 2 * i + 1, r = 2 * i + 2;
+    if (l < n && a[l] > a[largest]) largest = l;
+    if (r < n && a[r] > a[largest]) largest = r;
+    if (largest != i) {
+        int tmp = a[i]; a[i] = a[largest]; a[largest] = tmp;
+        siftDown(a, n, largest);
+    }
+}
+
+void heapSort(int a[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--)
+        siftDown(a, n, i);
+    for (int i = n - 1; i > 0; i--) {
+        int tmp = a[0]; a[0] = a[i]; a[i] = tmp;
+        siftDown(a, i, 0);
+    }
+}`,
     },
     'Хэш-таблицы': {
       summary:
