@@ -32,3 +32,6 @@ server/*.db-shm
 *.njsproj
 *.sln
 *.sw?
+
+.vercel
+.env*

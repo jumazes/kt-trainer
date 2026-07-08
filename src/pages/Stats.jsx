@@ -87,8 +87,8 @@ export default function Stats() {
           <p>Пока нет пройденных тестов</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
-          <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+          <table className="w-full min-w-[560px] text-left text-sm">
             <thead className="bg-slate-50 text-slate-500 dark:bg-slate-900 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-2 font-medium">Игрок</th>

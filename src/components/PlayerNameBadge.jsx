@@ -47,11 +47,11 @@ export default function PlayerNameBadge() {
         setDraft(name)
         setEditing(true)
       }}
-      className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+      className="flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-1.5 text-sm text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
     >
-      <User className="h-4 w-4" />
-      {name || 'Указать имя'}
-      <Pencil className="h-3 w-3 text-slate-400" />
+      <User className="h-4 w-4 shrink-0" />
+      <span className="max-w-[72px] truncate sm:max-w-none">{name || 'Указать имя'}</span>
+      <Pencil className="h-3 w-3 shrink-0 text-slate-400" />
     </button>
   )
 }
