@@ -1,40 +1,37 @@
-# КТ Тренажёр
+# KT Trainer
 
-Веб-приложение для подготовки к Комплексному тестированию (КТ) при поступлении в магистратуру. Формат теста, распределение вопросов по темам и сложности точно соответствуют официальной спецификации.
+A web app for practicing the Comprehensive Testing (KT) exam required for graduate school admission. The exam format, topic breakdown, and difficulty distribution match the official specification exactly.
 
 🔗 **[kt-trainer.vercel.app](https://kt-trainer.vercel.app)**
 
-## Разделы
+## Subjects
 
-- **Алгоритмы и структуры данных** — 30 вопросов, один верный ответ из 5, 60 минут
-- **Базы данных** — 20 вопросов, один или несколько верных ответов (частичное начисление баллов), 50 минут
+- **Algorithms & Data Structures** — 30 questions, single correct answer out of 5, 60 minutes
+- **Databases** — 20 questions, single or multiple correct answers (partial credit scoring), 50 minutes
 
-## Возможности
+## Features
 
-- Тренировочный тест в точном соответствии с официальным блюпринтом (темы, сложность A/B/C, число вопросов)
-- Расширенный банк вопросов — при каждой попытке случайная выборка из большего пула, а не одни и те же вопросы
-- Раздел «Изучение» с теорией по каждой теме, примерами кода на C и интерактивными диаграммами (сортировки, деревья, графы, ER-диаграмма)
-- Таймер с автозавершением теста по истечении времени
-- Общая ссылка для группы: прогресс каждого разделяется по имени, без регистрации и паролей
-- Статистика попыток по всем участникам
+- Take a timed practice exam that matches the real KT format exactly
+- Study theory for every topic, with code examples and interactive diagrams
+- Track your results over time
 
-## Стек
+## Stack
 
-React 19 + Vite + Tailwind CSS v4 (фронтенд), Express 5 + Turso/libSQL (бэкенд), деплой на Vercel.
+React 19 + Vite + Tailwind CSS v4 (frontend), Express 5 + Turso/libSQL (backend), deployed on Vercel.
 
-## Локальный запуск
+## Running locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Клиент поднимется на `http://localhost:5173`, API-сервер — на `http://localhost:3001`. Без переменных окружения сервер использует локальный файл SQLite; для подключения к Turso скопируйте `.env.example` в `.env` и укажите свои `TURSO_DATABASE_URL` и `TURSO_AUTH_TOKEN`.
+The client runs at `http://localhost:5173`, the API server at `http://localhost:3001`. Without environment variables the server falls back to a local SQLite file; to connect to Turso, copy `.env.example` to `.env` and fill in your `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`.
 
-Другие команды:
+Other commands:
 
 ```bash
-npm run lint     # проверка кода
-npm run build    # сборка продакшн-версии
-npm start        # сборка + запуск через Express (self-host режим)
+npm run lint     # lint the code
+npm run build    # production build
+npm start        # build + run via Express (self-hosted mode)
 ```
