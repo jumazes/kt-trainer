@@ -1,21 +1,26 @@
 import { useEffect, useState } from 'react'
-import { UserPlus } from 'lucide-react'
+import { UserPlus, WifiOff } from 'lucide-react'
 import { getSubjects, getHistory } from '../api/client'
-import { getPlayerName } from '../hooks/usePlayerName'
+import { usePlayerName } from '../hooks/usePlayerName'
 import SubjectCard from '../components/SubjectCard'
 
 export default function Dashboard() {
   const [subjects, setSubjects] = useState([])
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
-  const playerName = getPlayerName()
+  const [error, setError] = useState(false)
+  const [playerName] = usePlayerName()
 
   useEffect(() => {
-    Promise.all([getSubjects(), getHistory(playerName)]).then(([subjectsData, historyData]) => {
-      setSubjects(subjectsData)
-      setHistory(historyData)
-      setLoading(false)
-    })
+    setLoading(true)
+    setError(false)
+    Promise.all([getSubjects(), getHistory(playerName)])
+      .then(([subjectsData, historyData]) => {
+        setSubjects(subjectsData)
+        setHistory(historyData)
+      })
+      .catch(() => setError(true))
+      .finally(() => setLoading(false))
   }, [playerName])
 
   const bestScoreFor = (subjectId) => {
@@ -44,13 +49,18 @@ export default function Dashboard() {
 
       {loading ? (
         <p className="text-slate-500 dark:text-slate-400">Загрузка...</p>
+      ) : error ? (
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-rose-300 py-16 text-rose-500 dark:border-rose-500/40 dark:text-rose-400">
+          <WifiOff className="h-8 w-8" />
+          <p>Не удалось загрузить данные. Проверьте соединение и обновите страницу.</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {subjects.map((subject) => (
             <SubjectCard
               key={subject.id}
               subject={subject}
-              questionCount={subject.questionCount}
+              questionCount={subject.format.totalQuestions}
               bestScore={bestScoreFor(subject.id)}
             />
           ))}

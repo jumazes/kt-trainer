@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, PlayCircle, BookOpen } from 'lucide-react'
 import { getSubject, getHistory } from '../api/client'
-import { getPlayerName } from '../hooks/usePlayerName'
+import { usePlayerName } from '../hooks/usePlayerName'
 
 export default function SubjectDetail() {
   const { subjectId } = useParams()
+  const [playerName] = usePlayerName()
   const [subject, setSubject] = useState(null)
   const [bestScore, setBestScore] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -14,7 +15,7 @@ export default function SubjectDetail() {
   useEffect(() => {
     setLoading(true)
     setNotFound(false)
-    Promise.all([getSubject(subjectId), getHistory(getPlayerName())])
+    Promise.all([getSubject(subjectId), getHistory(playerName)])
       .then(([subjectData, history]) => {
         setSubject(subjectData)
         const attempts = history.filter((h) => h.subjectId === subjectId)
@@ -22,7 +23,7 @@ export default function SubjectDetail() {
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
-  }, [subjectId])
+  }, [subjectId, playerName])
 
   if (loading) {
     return <p className="text-slate-500 dark:text-slate-400">Загрузка...</p>

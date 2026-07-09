@@ -36,7 +36,7 @@ export default function Results() {
     )
   }
 
-  const { subjectId, subjectTitle, totalQuestions, pointsEarned, maxPoints, percent } = attempt
+  const { subjectId, subjectTitle, totalQuestions, pointsEarned, maxPoints } = attempt
 
   return (
     <div className="mx-auto max-w-md text-center">

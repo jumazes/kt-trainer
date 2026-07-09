@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Clock } from 'lucide-react'
 
-export default function Timer({ running = true, totalMinutes }) {
+export default function Timer({ running = true, totalMinutes, onTimeUp }) {
   const [seconds, setSeconds] = useState(0)
+  const firedRef = useRef(false)
 
   useEffect(() => {
     if (!running) return
@@ -14,6 +15,13 @@ export default function Timer({ running = true, totalMinutes }) {
   const totalSeconds = hasCountdown ? totalMinutes * 60 : null
   const remaining = hasCountdown ? Math.max(totalSeconds - seconds, 0) : seconds
   const isLow = hasCountdown && remaining <= 300
+
+  useEffect(() => {
+    if (hasCountdown && remaining === 0 && !firedRef.current) {
+      firedRef.current = true
+      onTimeUp?.()
+    }
+  }, [hasCountdown, remaining, onTimeUp])
 
   const minutes = String(Math.floor(remaining / 60)).padStart(2, '0')
   const secs = String(remaining % 60).padStart(2, '0')

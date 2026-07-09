@@ -28,6 +28,7 @@ export default function Quiz() {
   const [index, setIndex] = useState(0)
   const [answers, setAnswers] = useState({})
   const [showResult, setShowResult] = useState(false)
+  const [finishing, setFinishing] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -40,6 +41,15 @@ export default function Quiz() {
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [subjectId])
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [])
 
   if (loading) {
     return <p className="text-slate-500 dark:text-slate-400">Загрузка...</p>
@@ -78,6 +88,9 @@ export default function Quiz() {
   const handleCheck = () => setShowResult(true)
 
   const finishQuiz = async (finalAnswers) => {
+    if (finishing) return
+    setFinishing(true)
+
     let pointsEarned = 0
     let maxPoints = 0
 
@@ -104,7 +117,12 @@ export default function Quiz() {
       maxPoints,
       percent,
     }
-    await postAttempt(attempt)
+
+    try {
+      await postAttempt(attempt)
+    } catch (err) {
+      console.error('Не удалось сохранить результат теста на сервере', err)
+    }
     navigate('/results', { state: { ...attempt, date: new Date().toISOString() } })
   }
 
@@ -117,17 +135,26 @@ export default function Quiz() {
     setShowResult(false)
   }
 
+  const handleExit = () => {
+    if (window.confirm('Прервать тест? Текущий прогресс не будет сохранён.')) {
+      navigate('/')
+    }
+  }
+
+  const handleTimeUp = () => finishQuiz(answers)
+
   return (
     <div className="mx-auto max-w-2xl">
       <div className="mb-4 flex items-center justify-between">
-        <Link
-          to="/"
+        <button
+          type="button"
+          onClick={handleExit}
           className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
         >
           <ArrowLeft className="h-4 w-4" />
           Выйти
-        </Link>
-        <Timer running={!showResult} totalMinutes={subject.format.totalMinutes} />
+        </button>
+        <Timer running={!showResult && !finishing} totalMinutes={subject.format.totalMinutes} onTimeUp={handleTimeUp} />
       </div>
 
       <div className="mb-6">
@@ -157,7 +184,8 @@ export default function Quiz() {
           <button
             type="button"
             onClick={handleNext}
-            className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-violet-700 active:scale-[0.97]"
+            disabled={finishing}
+            className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-violet-700 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
           >
             {isLast ? (
               <>

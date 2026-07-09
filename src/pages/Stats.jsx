@@ -1,19 +1,21 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Trash2, BarChart3 } from 'lucide-react'
+import { Trash2, BarChart3, WifiOff } from 'lucide-react'
 import { getHistory, clearHistory } from '../api/client'
-import { getPlayerName } from '../hooks/usePlayerName'
+import { usePlayerName } from '../hooks/usePlayerName'
 
 const ALL = '__all__'
 
 export default function Stats() {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
-  const playerName = getPlayerName()
+  const [error, setError] = useState(false)
+  const [playerName] = usePlayerName()
   const [filter, setFilter] = useState(playerName || ALL)
 
   useEffect(() => {
     getHistory()
       .then(setHistory)
+      .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [])
 
@@ -81,6 +83,11 @@ export default function Stats() {
 
       {loading ? (
         <p className="text-slate-500 dark:text-slate-400">Загрузка...</p>
+      ) : error ? (
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-rose-300 py-16 text-rose-500 dark:border-rose-500/40 dark:text-rose-400">
+          <WifiOff className="h-8 w-8" />
+          <p>Не удалось загрузить данные. Проверьте соединение и обновите страницу.</p>
+        </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-300 py-16 text-slate-500 dark:border-slate-700 dark:text-slate-400">
           <BarChart3 className="h-8 w-8" />
