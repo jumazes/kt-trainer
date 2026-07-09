@@ -15,7 +15,7 @@ export default function SubjectDetail() {
   useEffect(() => {
     setLoading(true)
     setNotFound(false)
-    Promise.all([getSubject(subjectId), getHistory(playerName)])
+    Promise.all([getSubject(subjectId), playerName ? getHistory(playerName) : Promise.resolve([])])
       .then(([subjectData, history]) => {
         setSubject(subjectData)
         const attempts = history.filter((h) => h.subjectId === subjectId)

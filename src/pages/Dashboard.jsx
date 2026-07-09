@@ -14,7 +14,7 @@ export default function Dashboard() {
   useEffect(() => {
     setLoading(true)
     setError(false)
-    Promise.all([getSubjects(), getHistory(playerName)])
+    Promise.all([getSubjects(), playerName ? getHistory(playerName) : Promise.resolve([])])
       .then(([subjectsData, historyData]) => {
         setSubjects(subjectsData)
         setHistory(historyData)
