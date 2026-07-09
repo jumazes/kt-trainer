@@ -1,16 +1,40 @@
-# React + Vite
+# КТ Тренажёр
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Веб-приложение для подготовки к Комплексному тестированию (КТ) при поступлении в магистратуру. Формат теста, распределение вопросов по темам и сложности точно соответствуют официальной спецификации.
 
-Currently, two official plugins are available:
+🔗 **[kt-trainer.vercel.app](https://kt-trainer.vercel.app)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Разделы
 
-## React Compiler
+- **Алгоритмы и структуры данных** — 30 вопросов, один верный ответ из 5, 60 минут
+- **Базы данных** — 20 вопросов, один или несколько верных ответов (частичное начисление баллов), 50 минут
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Возможности
 
-## Expanding the Oxlint configuration
+- Тренировочный тест в точном соответствии с официальным блюпринтом (темы, сложность A/B/C, число вопросов)
+- Расширенный банк вопросов — при каждой попытке случайная выборка из большего пула, а не одни и те же вопросы
+- Раздел «Изучение» с теорией по каждой теме, примерами кода на C и интерактивными диаграммами (сортировки, деревья, графы, ER-диаграмма)
+- Таймер с автозавершением теста по истечении времени
+- Общая ссылка для группы: прогресс каждого разделяется по имени, без регистрации и паролей
+- Статистика попыток по всем участникам
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Стек
+
+React 19 + Vite + Tailwind CSS v4 (фронтенд), Express 5 + Turso/libSQL (бэкенд), деплой на Vercel.
+
+## Локальный запуск
+
+```bash
+npm install
+npm run dev
+```
+
+Клиент поднимется на `http://localhost:5173`, API-сервер — на `http://localhost:3001`. Без переменных окружения сервер использует локальный файл SQLite; для подключения к Turso скопируйте `.env.example` в `.env` и укажите свои `TURSO_DATABASE_URL` и `TURSO_AUTH_TOKEN`.
+
+Другие команды:
+
+```bash
+npm run lint     # проверка кода
+npm run build    # сборка продакшн-версии
+npm start        # сборка + запуск через Express (self-host режим)
+```
