@@ -1,9 +1,9 @@
-export default function ProgressBar({ current, total }) {
+export default function ProgressBar({ current, total, label }) {
   const percent = total === 0 ? 0 : Math.round((current / total) * 100)
   return (
     <div className="w-full">
       <div className="mb-1 flex justify-between text-xs text-slate-500 dark:text-slate-400">
-        <span>Вопрос {current} из {total}</span>
+        <span>{label ?? `Вопрос ${current} из ${total}`}</span>
         <span>{percent}%</span>
       </div>
       <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
