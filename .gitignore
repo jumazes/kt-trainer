@@ -35,3 +35,4 @@ server/*.db-shm
 
 .vercel
 .env*
+!.env.example

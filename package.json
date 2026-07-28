@@ -7,6 +7,7 @@
     "dev": "concurrently -n server,client -c blue,green \"npm:server\" \"npm:dev:client\"",
     "dev:client": "vite",
     "server": "node --env-file-if-exists=.env server/index.js",
+    "server:turso": "node --env-file=.env.turso server/index.js",
     "build": "vite build",
     "start": "npm run build && npm run server",
     "lint": "oxlint",

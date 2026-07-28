@@ -18,4 +18,9 @@ if (fs.existsSync(distPath)) {
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`API server running on http://localhost:${PORT}`)
+  if (process.env.TURSO_DATABASE_URL) {
+    console.log(`⚠  Using REMOTE database ${process.env.TURSO_DATABASE_URL} — attempts saved here are shared with everyone.`)
+  } else {
+    console.log('Using local database server/local.db')
+  }
 })
