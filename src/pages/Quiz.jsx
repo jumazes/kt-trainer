@@ -174,24 +174,51 @@ export default function Quiz() {
     }
     setFinishing(true)
 
+    const isPartial = subject.format.scoring === 'partial'
     let pointsEarned = 0
     let maxPoints = 0
+    const perGroup = new Map()
 
     for (const q of subjectQuestions) {
       const selected = answers[q.id] ?? []
-      const isPartial = subject.format.scoring === 'partial'
-      maxPoints += isPartial ? 2 : 1
+      const questionMax = isPartial ? 2 : 1
       // An unanswered question scores nothing. Without this, the partial-credit
       // formula would treat "selected nothing" as a single error and award half
       // credit — more than an actually wrong answer earns.
-      if (selected.length === 0) continue
-      const errors = errorCount(selected, q.correct)
-      if (isPartial) {
-        pointsEarned += errors === 0 ? 2 : errors === 1 ? 1 : 0
-      } else {
-        pointsEarned += errors === 0 ? 1 : 0
+      let questionEarned = 0
+      if (selected.length > 0) {
+        const errors = errorCount(selected, q.correct)
+        questionEarned = isPartial
+          ? errors === 0
+            ? 2
+            : errors === 1
+              ? 1
+              : 0
+          : errors === 0
+            ? 1
+            : 0
+      }
+
+      pointsEarned += questionEarned
+      maxPoints += questionMax
+
+      if (q.group) {
+        const entry = perGroup.get(q.group) ?? { earned: 0, max: 0 }
+        entry.earned += questionEarned
+        entry.max += questionMax
+        perGroup.set(q.group, entry)
       }
     }
+
+    // Titles travel with the attempt so the stats page can render a breakdown
+    // without having to look the subject's groups up again.
+    const groupTitles = new Map((subject.groups ?? []).map((g) => [g.id, g.title]))
+    const breakdown = [...perGroup.entries()].map(([id, totals]) => ({
+      id,
+      title: groupTitles.get(id) ?? id,
+      earned: totals.earned,
+      max: totals.max,
+    }))
 
     const percent = Math.round((pointsEarned / maxPoints) * 100)
     const attempt = {
@@ -202,6 +229,7 @@ export default function Quiz() {
       pointsEarned,
       maxPoints,
       percent,
+      breakdown,
     }
 
     try {

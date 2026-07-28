@@ -74,6 +74,7 @@ const SCHEMA = [
     points_earned REAL NOT NULL,
     max_points REAL NOT NULL,
     percent INTEGER NOT NULL,
+    breakdown TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   )`,
 ]
@@ -152,6 +153,15 @@ export function ensureReady() {
   if (!readyPromise) {
     readyPromise = (async () => {
       await client.batch(SCHEMA, 'write')
+
+      // Databases created before per-group results existed still have an attempts
+      // table without this column; add it in place so existing history survives.
+      const { rows: attemptColumns } = await client.execute('PRAGMA table_info(attempts)')
+      if (!attemptColumns.some((column) => column.name === 'breakdown')) {
+        await client.execute('ALTER TABLE attempts ADD COLUMN breakdown TEXT')
+        console.log('Added breakdown column to attempts.')
+      }
+
       const { rows } = await client.execute("SELECT value FROM meta WHERE key = 'content_version'")
       const currentVersion = rows[0]?.value
 

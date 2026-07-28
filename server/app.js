@@ -158,13 +158,15 @@ app.get('/api/attempts', async (req, res) => {
       pointsEarned: r.points_earned,
       maxPoints: r.max_points,
       percent: r.percent,
+      breakdown: r.breakdown ? JSON.parse(r.breakdown) : undefined,
       date: r.created_at,
     })),
   )
 })
 
 app.post('/api/attempts', async (req, res) => {
-  const { playerName, subjectId, subjectTitle, totalQuestions, pointsEarned, maxPoints, percent } = req.body
+  const { playerName, subjectId, subjectTitle, totalQuestions, pointsEarned, maxPoints, percent, breakdown } =
+    req.body
   if (
     !subjectId ||
     !subjectTitle ||
@@ -176,8 +178,17 @@ app.post('/api/attempts', async (req, res) => {
     return res.status(400).json({ error: 'Missing required attempt fields' })
   }
   const result = await client.execute({
-    sql: 'INSERT INTO attempts (player_name, subject_id, subject_title, total_questions, points_earned, max_points, percent) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    args: [playerName || 'Аноним', subjectId, subjectTitle, totalQuestions, pointsEarned, maxPoints, percent],
+    sql: 'INSERT INTO attempts (player_name, subject_id, subject_title, total_questions, points_earned, max_points, percent, breakdown) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    args: [
+      playerName || 'Аноним',
+      subjectId,
+      subjectTitle,
+      totalQuestions,
+      pointsEarned,
+      maxPoints,
+      percent,
+      breakdown ? JSON.stringify(breakdown) : null,
+    ],
   })
   res.status(201).json({ id: Number(result.lastInsertRowid) })
 })

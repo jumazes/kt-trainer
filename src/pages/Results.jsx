@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { Trophy, RotateCcw, Home, ChevronDown } from 'lucide-react'
 import QuestionCard from '../components/QuestionCard'
+import TopicBreakdown from '../components/TopicBreakdown'
 
 export default function Results() {
   const location = useLocation()
@@ -38,7 +39,8 @@ export default function Results() {
     )
   }
 
-  const { subjectId, subjectTitle, totalQuestions, pointsEarned, maxPoints, review, multiple } = attempt
+  const { subjectId, subjectTitle, totalQuestions, pointsEarned, maxPoints, review, multiple, breakdown } =
+    attempt
   const unanswered = review ? review.filter((r) => r.selected.length === 0).length : 0
 
   return (
@@ -84,6 +86,18 @@ export default function Results() {
           </Link>
         </div>
       </div>
+
+      {breakdown?.length > 0 && (
+        <div className="mx-auto mt-10 max-w-2xl">
+          <h2 className="mb-1 text-lg font-medium text-slate-900 dark:text-slate-100">Результат по темам</h2>
+          <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+            Слабые темы сверху — с них полезнее всего начать повторение.
+          </p>
+          <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+            <TopicBreakdown rows={breakdown} />
+          </div>
+        </div>
+      )}
 
       {review?.length > 0 && (
         <div className="mx-auto mt-10 max-w-2xl">

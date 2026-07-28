@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Trash2, BarChart3, WifiOff } from 'lucide-react'
 import { getHistory, clearHistory } from '../api/client'
 import { usePlayerName } from '../hooks/usePlayerName'
+import TopicBreakdown from '../components/TopicBreakdown'
 
 const ALL = '__all__'
 
@@ -25,6 +26,33 @@ export default function Stats() {
   }, [history])
 
   const filtered = filter === ALL ? history : history.filter((h) => h.playerName === filter)
+
+  // Sum every attempt's per-group results so weak topics show up across the
+  // whole history rather than only in the last attempt.
+  const breakdownBySubject = useMemo(() => {
+    const subjects = new Map()
+    for (const attempt of filtered) {
+      if (!attempt.breakdown?.length) continue
+      const entry = subjects.get(attempt.subjectId) ?? {
+        title: attempt.subjectTitle,
+        attempts: 0,
+        groups: new Map(),
+      }
+      entry.attempts += 1
+      for (const group of attempt.breakdown) {
+        const totals = entry.groups.get(group.id) ?? { id: group.id, title: group.title, earned: 0, max: 0 }
+        totals.earned += group.earned
+        totals.max += group.max
+        entry.groups.set(group.id, totals)
+      }
+      subjects.set(attempt.subjectId, entry)
+    }
+    return [...subjects.values()].map((entry) => ({
+      title: entry.title,
+      attempts: entry.attempts,
+      rows: [...entry.groups.values()],
+    }))
+  }, [filtered])
 
   const handleClear = async () => {
     if (!window.confirm(`Удалить историю попыток игрока «${filter}»?`)) return
@@ -127,6 +155,31 @@ export default function Stats() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {!loading && !error && breakdownBySubject.length > 0 && (
+        <div className="mt-10">
+          <h2 className="mb-1 text-lg font-medium text-slate-900 dark:text-slate-100">Сильные и слабые темы</h2>
+          <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+            Суммарно по всем попыткам, слабые темы сверху.
+          </p>
+          <div className="flex flex-col gap-4">
+            {breakdownBySubject.map((subject) => (
+              <div
+                key={subject.title}
+                className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+              >
+                <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+                  <h3 className="font-medium text-slate-900 dark:text-slate-100">{subject.title}</h3>
+                  <span className="text-xs text-slate-400 dark:text-slate-500">
+                    попыток: {subject.attempts}
+                  </span>
+                </div>
+                <TopicBreakdown rows={subject.rows} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
