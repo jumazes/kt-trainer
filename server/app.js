@@ -23,6 +23,22 @@ function shuffle(array) {
   return result
 }
 
+// Reorders the options of a question and rewrites `correct` to the new positions,
+// so repeated attempts can't be answered by remembering where the answer sat.
+function withShuffledOptions(question) {
+  const order = shuffle(question.options.map((_, i) => i))
+  const wasCorrect = new Set(question.correct)
+  const correct = []
+  order.forEach((originalIndex, newIndex) => {
+    if (wasCorrect.has(originalIndex)) correct.push(newIndex)
+  })
+  return {
+    ...question,
+    options: order.map((originalIndex) => question.options[originalIndex]),
+    correct,
+  }
+}
+
 async function getSubjectRow(id) {
   const { rows } = await client.execute({ sql: 'SELECT * FROM subjects WHERE id = ?', args: [id] })
   return rows[0]
@@ -109,7 +125,7 @@ app.get('/api/subjects/:id/questions', async (req, res) => {
 
   const format = blueprint[req.params.id]
   if (!format) {
-    return res.json(shuffle(pool))
+    return res.json(shuffle(pool).map(withShuffledOptions))
   }
 
   // Each group/difficulty bucket may hold more questions than the exam requires,
@@ -121,7 +137,7 @@ app.get('/api/subjects/:id/questions', async (req, res) => {
       selected.push(...shuffle(bucket).slice(0, count))
     }
   }
-  res.json(shuffle(selected))
+  res.json(shuffle(selected).map(withShuffledOptions))
 })
 
 app.get('/api/attempts', async (req, res) => {
